@@ -205,27 +205,31 @@
 /* Login card: pure white surface with pure black text, matching the
    prompt box style on the main page. */
 .login-light {
-  color-scheme: dark;
-  --background: oklch(0.18 0 0);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.18 0 0);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.18 0 0);
-  --popover-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.26 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.26 0 0);
-  --muted-foreground: oklch(0.72 0 0);
-  --border: oklch(0.34 0 0);
-  --input: oklch(0.34 0 0);
-  --ring: var(--brand-mid);
-  --primary: var(--brand-mid);
-  --primary-foreground: oklch(0.99 0 0);
+  color-scheme: light;
+  --background: oklch(0.95 0.06 340);
+  --foreground: oklch(1 0 0);
+  --card: oklch(1 0 0 / 0.16);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(1 0 0 / 0.16);
+  --popover-foreground: oklch(1 0 0);
+  --secondary: oklch(1 0 0 / 0.22);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(1 0 0 / 0.22);
+  --muted-foreground: oklch(1 0 0 / 0.78);
+  --border: oklch(1 0 0 / 0.35);
+  --input: oklch(1 0 0 / 0.35);
+  --ring: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0.62 0.24 340);
 }
 
-.login-gradient {
-  background:
-    linear-gradient(135deg, oklch(0.98 0.025 245), oklch(0.97 0.04 300) 52%, oklch(0.99 0.028 345));
+.login-card-gradient {
+  background: linear-gradient(
+    135deg,
+    oklch(0.66 0.26 350),
+    oklch(0.74 0.2 345) 55%,
+    oklch(0.82 0.14 340)
+  );
 }
 
 .site-header-scrolled {
