@@ -4,7 +4,7 @@ const title = 'Workspace — SUPERINTELLIGENS'
 const description =
   'Chat with the AI consultant, compile your app spec and preview it live on phone, tablet and desktop.'
 
-export const Route = createFileRoute('/workspace')({
+export const Route = createFileRoute('/_authenticated/workspace')({
   head: () => ({
     meta: [
       { title },

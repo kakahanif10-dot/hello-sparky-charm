@@ -1,22 +1,67 @@
-import { useState } from 'react'
-import { useRouter } from '@/lib/next-router'
+import { useEffect, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import Link from '@/components/link'
+import { supabase } from '@/integrations/supabase/client'
+import { lovable } from '@/integrations/lovable/index'
 
 export function AuthForm() {
-  const router = useRouter()
+  const navigate = useNavigate()
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
 
-  const go = () => {
-    if (status !== 'idle') return
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) navigate({ to: '/workspace', replace: true })
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) navigate({ to: '/workspace', replace: true })
+    })
+    return () => sub.subscription.unsubscribe()
+  }, [navigate])
+
+  const google = async () => {
+    setError(null)
     setStatus('loading')
-    setTimeout(() => router.push('/workspace'), 800)
+    const result = await lovable.auth.signInWithOAuth('google', {
+      redirect_uri: `${window.location.origin}/login`,
+    })
+    if (result.error) {
+      setError(result.error.message ?? 'Google sign-in failed')
+      setStatus('idle')
+      return
+    }
+    if (result.redirected) return
+    navigate({ to: '/workspace', replace: true })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    go()
+    setError(null)
+    setNotice(null)
+    setStatus('loading')
+    if (mode === 'signup') {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: { display_name: name || email.split('@')[0] },
+        },
+      })
+      setStatus('idle')
+      if (error) return setError(error.message)
+      if (!data.session) setNotice('Check your email to confirm your account, then log in.')
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      setStatus('idle')
+      if (error) return setError(error.message)
+    }
   }
 
   return (
@@ -33,13 +78,11 @@ export function AuthForm() {
 
       <p className="text-xl font-medium text-muted-foreground">Start building.</p>
       <h1 className="mt-1 text-xl font-semibold tracking-tight text-foreground">
-        Log in to your account
+        {mode === 'signin' ? 'Log in to your account' : 'Create your account'}
       </h1>
 
       <div className="mt-6 grid gap-3">
-        <SocialButton onClick={go} disabled={status !== 'idle'} label="Continue with Google" icon={<GoogleIcon />} />
-        <SocialButton onClick={go} disabled={status !== 'idle'} label="Continue with GitHub" icon={<GithubIcon />} />
-        <SocialButton onClick={go} disabled={status !== 'idle'} label="Continue with Apple" icon={<AppleIcon />} />
+        <SocialButton onClick={google} disabled={status !== 'idle'} label="Continue with Google" icon={<GoogleIcon />} />
       </div>
 
       <div className="my-6 flex items-center gap-4 text-xs text-muted-foreground">
@@ -49,6 +92,15 @@ export function AuthForm() {
       </div>
 
       <form onSubmit={submit} className="grid gap-3">
+        {mode === 'signup' && (
+          <input
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="h-11 w-full rounded-md border border-border bg-card px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
+          />
+        )}
         <input
           type="email"
           required
@@ -57,20 +109,45 @@ export function AuthForm() {
           onChange={(e) => setEmail(e.target.value)}
           className="h-11 w-full rounded-md border border-border bg-card px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
         />
+        <input
+          type="password"
+          required
+          minLength={6}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="h-11 w-full rounded-md border border-border bg-card px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
+        />
+        {error && <p className="text-sm font-medium text-foreground">⚠ {error}</p>}
+        {notice && <p className="text-sm font-medium text-foreground">{notice}</p>}
         <button
           type="submit"
           disabled={status !== 'idle'}
           className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-border bg-card text-sm font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-70"
         >
           {status === 'loading' && <Loader2 className="h-4 w-4 animate-spin" />}
-          Continue
+          {mode === 'signin' ? 'Log in' : 'Sign up'}
         </button>
       </form>
 
-      <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
+        <button
+          type="button"
+          onClick={() => {
+            setMode(mode === 'signin' ? 'signup' : 'signin')
+            setError(null)
+            setNotice(null)
+          }}
+          className="font-semibold text-foreground underline underline-offset-2"
+        >
+          {mode === 'signin' ? 'Sign up' : 'Log in'}
+        </button>
+      </p>
+
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
         <LockIcon />
-        SSO available on{' '}
-        <span className="underline underline-offset-2">Business and Enterprise</span> plans
+        Your account is saved securely
       </p>
     </div>
   )

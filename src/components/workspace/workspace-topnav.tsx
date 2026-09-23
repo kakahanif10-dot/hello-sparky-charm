@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion'
 import { ChevronDown, Rocket, Share2, Loader2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { AccountMenu } from '@/components/auth/account-menu'
 
 export function WorkspaceTopnav({
   projectName,
@@ -57,10 +58,7 @@ export function WorkspaceTopnav({
             </motion.span>
           )}
         </Button>
-        <span
-          className="ml-1 h-8 w-8 rounded-full border border-border bg-secondary"
-          aria-label="Account"
-        />
+        <AccountMenu />
       </div>
     </header>
   )
