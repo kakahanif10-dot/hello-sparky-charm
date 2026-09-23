@@ -205,19 +205,19 @@
 /* Login card: pure white surface with pure black text, matching the
    prompt box style on the main page. */
 .login-light {
-  color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0 0 0);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.2 0 0);
-  --border: oklch(0.87 0 0);
-  --input: oklch(0.87 0 0);
+  color-scheme: dark;
+  --background: oklch(0.18 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.18 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.26 0 0);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.26 0 0);
+  --muted-foreground: oklch(0.72 0 0);
+  --border: oklch(0.34 0 0);
+  --input: oklch(0.34 0 0);
   --ring: var(--brand-mid);
   --primary: var(--brand-mid);
   --primary-foreground: oklch(0.99 0 0);
