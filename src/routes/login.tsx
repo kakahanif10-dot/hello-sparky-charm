@@ -20,8 +20,6 @@ export const Route = createFileRoute('/login')({
 })
 
 import { AuthForm } from '@/components/auth/auth-form'
-import { SiteHeader } from '@/components/landing/site-header'
-import { Hero } from '@/components/landing/hero'
 
 function LoginPage() {
   return (
