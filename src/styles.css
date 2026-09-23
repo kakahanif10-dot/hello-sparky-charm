@@ -202,10 +202,10 @@
   color: var(--foreground);
 }
 
-/* Login is intentionally bright and airy while the builder stays dark. */
+/* Login tokens are bright and airy; the surface itself stays transparent so the
+   landing page shows through behind the white card. */
 .login-light {
   color-scheme: light;
-  background: oklch(1 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.19 0.025 275);
   --card: oklch(1 0 0);
