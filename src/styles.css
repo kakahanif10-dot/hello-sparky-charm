@@ -202,22 +202,22 @@
   color: var(--foreground);
 }
 
-/* Login tokens are bright and airy; the surface itself stays transparent so the
-   landing page shows through behind the white card. */
+/* Login card: pure white surface with pure black text, matching the
+   prompt box style on the main page. */
 .login-light {
   color-scheme: light;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.19 0.025 275);
+  --foreground: oklch(0 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.025 275);
+  --card-foreground: oklch(0 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.025 275);
-  --secondary: oklch(0.95 0.018 275);
-  --secondary-foreground: oklch(0.23 0.03 275);
-  --muted: oklch(0.96 0.012 275);
-  --muted-foreground: oklch(0.49 0.025 275);
-  --border: oklch(0.88 0.018 275);
-  --input: oklch(0.88 0.018 275);
+  --popover-foreground: oklch(0 0 0);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.2 0 0);
+  --border: oklch(0.87 0 0);
+  --input: oklch(0.87 0 0);
   --ring: var(--brand-mid);
   --primary: var(--brand-mid);
   --primary-foreground: oklch(0.99 0 0);
