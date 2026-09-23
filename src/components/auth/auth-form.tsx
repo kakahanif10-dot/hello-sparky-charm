@@ -1,22 +1,67 @@
-import { useState } from 'react'
-import { useRouter } from '@/lib/next-router'
+import { useEffect, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import Link from '@/components/link'
+import { supabase } from '@/integrations/supabase/client'
+import { lovable } from '@/integrations/lovable/index'
 
 export function AuthForm() {
-  const router = useRouter()
+  const navigate = useNavigate()
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading'>('idle')
+  const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
 
-  const go = () => {
-    if (status !== 'idle') return
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) navigate({ to: '/workspace', replace: true })
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) navigate({ to: '/workspace', replace: true })
+    })
+    return () => sub.subscription.unsubscribe()
+  }, [navigate])
+
+  const google = async () => {
+    setError(null)
     setStatus('loading')
-    setTimeout(() => router.push('/workspace'), 800)
+    const result = await lovable.auth.signInWithOAuth('google', {
+      redirect_uri: `${window.location.origin}/login`,
+    })
+    if (result.error) {
+      setError(result.error.message ?? 'Google sign-in failed')
+      setStatus('idle')
+      return
+    }
+    if (result.redirected) return
+    navigate({ to: '/workspace', replace: true })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    go()
+    setError(null)
+    setNotice(null)
+    setStatus('loading')
+    if (mode === 'signup') {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: { display_name: name || email.split('@')[0] },
+        },
+      })
+      setStatus('idle')
+      if (error) return setError(error.message)
+      if (!data.session) setNotice('Check your email to confirm your account, then log in.')
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      setStatus('idle')
+      if (error) return setError(error.message)
+    }
   }
 
   return (
