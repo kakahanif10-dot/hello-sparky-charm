@@ -318,8 +318,13 @@ function AssistantBubble({
           <MessageContent className="w-full">
           {message.text ? (
             <MessageResponse>{message.text}</MessageResponse>
-          ) : (
+          ) : !message.image ? (
             <Shimmer className="text-sm">Thinking...</Shimmer>
+          ) : null}
+          {message.image && (
+            <a href={message.image} download="image.png" target="_blank" rel="noreferrer">
+              <img src={message.image} alt="Generated" className="mt-2 w-full max-w-sm rounded-lg border border-border" />
+            </a>
           )}
           </MessageContent>
         {message.recommendations && message.recommendations.length > 0 && (
