@@ -20,23 +20,12 @@ export const Route = createFileRoute('/login')({
 })
 
 import { AuthForm } from '@/components/auth/auth-form'
-import { SiteHeader } from '@/components/landing/site-header'
-import { Hero } from '@/components/landing/hero'
 
 function LoginPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* The landing page stays visible behind the sign-in dialog */}
-      <main className="landing-page pointer-events-none min-h-screen" aria-hidden>
-        <div className="hero-pastel min-h-screen">
-          <SiteHeader />
-          <Hero />
-        </div>
-      </main>
-
-      {/* Transparent scrim: the landing page stays fully visible behind the dialog */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto px-6 py-12">
-        <div className="login-light w-full max-w-[420px]">
+    <div className="login-light min-h-screen bg-background text-foreground">
+      <div className="flex min-h-screen items-center justify-center overflow-y-auto px-6 py-12">
+        <div className="w-full max-w-[420px]">
           <AuthForm />
         </div>
       </div>
