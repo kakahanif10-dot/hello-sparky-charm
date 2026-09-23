@@ -290,11 +290,46 @@ function WorkspacePage() {
   const BUILD_INTENT =
     /\b(add|create|build|make|generate|redesign|design|change|update|remove|delete|turn|convert|rebuild|buat|bikin|tambah|ubah|ganti|hapus|jadikan|tambahkan|hilangkan)\b/i
 
+  // Text-to-image intent (multi-language keywords).
+  const IMAGE_INTENT =
+    /(\b(draw|image|picture|photo|illustration|paint|sketch|gambar|gambarkan|foto|lukis|imagen|dibujo|dessine|bild|immagine)\b|ภาพ|รูป|画|图片|絵|画像|그림|صورة|рисунок|चित्र)/i
+
+  const runImage = async (text: string) => {
+    if (chatting || generating) return
+    setChatting(true)
+    const assistantId = uid()
+    setMessages((m) => [
+      ...m,
+      { id: uid(), role: 'user', text },
+      { id: assistantId, role: 'assistant', text: '' },
+    ])
+    try {
+      const res = await fetch('/api/image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: text }),
+      })
+      const json = (await res.json()) as { image?: string; error?: string }
+      if (!res.ok || !json.image) throw new Error(json.error || `Failed (${res.status})`)
+      setMessages((m) => m.map((msg) => (msg.id === assistantId ? { ...msg, image: json.image } : msg)))
+    } catch (err) {
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === assistantId ? { ...msg, text: `Couldn't create the image: ${(err as Error).message}` } : msg,
+        ),
+      )
+    } finally {
+      setChatting(false)
+    }
+  }
+
   const handleSend = () => {
     const text = prompt.trim()
     if (!text || generating || chatting) return
     setPrompt('')
-    if (!spec.hasContent) {
+    if (IMAGE_INTENT.test(text)) {
+      void runImage(text)
+    } else if (!spec.hasContent) {
       void runGenerate(text, text)
     } else if (BUILD_INTENT.test(text)) {
       const base = lastPrompt || spec.industry || 'the current app'

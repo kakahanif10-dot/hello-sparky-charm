@@ -37,6 +37,7 @@ export type ConsultantMessage = {
   id: string
   role: 'user' | 'assistant'
   text: string
+  image?: string
   recommendations?: Recommendation[]
 }
 
