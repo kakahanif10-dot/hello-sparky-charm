@@ -78,13 +78,11 @@ export function AuthForm() {
 
       <p className="text-xl font-medium text-muted-foreground">Start building.</p>
       <h1 className="mt-1 text-xl font-semibold tracking-tight text-foreground">
-        Log in to your account
+        {mode === 'signin' ? 'Log in to your account' : 'Create your account'}
       </h1>
 
       <div className="mt-6 grid gap-3">
-        <SocialButton onClick={go} disabled={status !== 'idle'} label="Continue with Google" icon={<GoogleIcon />} />
-        <SocialButton onClick={go} disabled={status !== 'idle'} label="Continue with GitHub" icon={<GithubIcon />} />
-        <SocialButton onClick={go} disabled={status !== 'idle'} label="Continue with Apple" icon={<AppleIcon />} />
+        <SocialButton onClick={google} disabled={status !== 'idle'} label="Continue with Google" icon={<GoogleIcon />} />
       </div>
 
       <div className="my-6 flex items-center gap-4 text-xs text-muted-foreground">
@@ -94,6 +92,15 @@ export function AuthForm() {
       </div>
 
       <form onSubmit={submit} className="grid gap-3">
+        {mode === 'signup' && (
+          <input
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="h-11 w-full rounded-md border border-border bg-card px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
+          />
+        )}
         <input
           type="email"
           required
@@ -102,20 +109,45 @@ export function AuthForm() {
           onChange={(e) => setEmail(e.target.value)}
           className="h-11 w-full rounded-md border border-border bg-card px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
         />
+        <input
+          type="password"
+          required
+          minLength={6}
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="h-11 w-full rounded-md border border-border bg-card px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-foreground/40 focus:outline-none"
+        />
+        {error && <p className="text-sm font-medium text-foreground">⚠ {error}</p>}
+        {notice && <p className="text-sm font-medium text-foreground">{notice}</p>}
         <button
           type="submit"
           disabled={status !== 'idle'}
           className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-border bg-card text-sm font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-70"
         >
           {status === 'loading' && <Loader2 className="h-4 w-4 animate-spin" />}
-          Continue
+          {mode === 'signin' ? 'Log in' : 'Sign up'}
         </button>
       </form>
 
-      <p className="mt-6 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
+        <button
+          type="button"
+          onClick={() => {
+            setMode(mode === 'signin' ? 'signup' : 'signin')
+            setError(null)
+            setNotice(null)
+          }}
+          className="font-semibold text-foreground underline underline-offset-2"
+        >
+          {mode === 'signin' ? 'Sign up' : 'Log in'}
+        </button>
+      </p>
+
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
         <LockIcon />
-        SSO available on{' '}
-        <span className="underline underline-offset-2">Business and Enterprise</span> plans
+        Your account is saved securely
       </p>
     </div>
   )
